@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -137,5 +136,64 @@ class TaskController extends Controller
         $this->taskService->togglePublished($task);
         
         return redirect()->back()->with('success', 'Task publication status updated.');
+    }
+    
+    /**
+     * Add a subtask to a task.
+     */
+    public function addSubtask(Request $request, Task $task)
+    {
+        if (Gate::denies('update', $task)) {
+            abort(403);
+        }
+        
+        $validated = $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required|string',
+        ]);
+        
+        $this->taskService->addSubtask(
+            $task, 
+            $validated['title'],
+            $validated['description'] ?? null
+        );
+        
+        return redirect()->back()->with('success', 'Subtask added successfully.');
+    }
+    
+    /**
+     * Update a subtask's completion status.
+     */
+    public function updateSubtaskStatus(Request $request, Task $task, int $subtaskId)
+    {
+        if (Gate::denies('update', $task)) {
+            abort(403);
+        }
+        
+        $validated = $request->validate([
+            'completed' => 'required|boolean',
+        ]);
+        
+        $this->taskService->updateSubtaskStatus(
+            $task,
+            $subtaskId,
+            $validated['completed']
+        );
+        
+        return redirect()->back()->with('success', 'Subtask status updated successfully.');
+    }
+    
+    /**
+     * Remove a subtask from a task.
+     */
+    public function removeSubtask(Request $request, Task $task, int $subtaskId)
+    {
+        if (Gate::denies('update', $task)) {
+            abort(403);
+        }
+        
+        $this->taskService->removeSubtask($task, $subtaskId);
+        
+        return redirect()->back()->with('success', 'Subtask removed successfully.');
     }
 } 

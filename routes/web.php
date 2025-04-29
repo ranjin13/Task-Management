@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\SubtaskController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -17,6 +18,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('tasks', TaskController::class);
     Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.update-status');
     Route::patch('tasks/{task}/toggle-published', [TaskController::class, 'togglePublished'])->name('tasks.toggle-published');
+    
+    // Subtask routes
+    Route::post('subtasks', [SubtaskController::class, 'store'])->name('subtasks.store');
+    Route::put('subtasks/{subtaskId}', [SubtaskController::class, 'toggle'])->name('subtasks.toggle');
+    Route::delete('subtasks/{subtaskId}', [SubtaskController::class, 'destroy'])->name('subtasks.destroy');
 });
 
 require __DIR__.'/settings.php';

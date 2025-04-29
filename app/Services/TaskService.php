@@ -170,4 +170,42 @@ class TaskService
         
         return $task;
     }
+    
+    /**
+     * Add a subtask to a task.
+     *
+     * @param Task $task
+     * @param string $title
+     * @param string|null $description
+     * @return Task
+     */
+    public function addSubtask(Task $task, string $title, string $description = null): Task
+    {
+        return $task->addSubtask($title, $description);
+    }
+    
+    /**
+     * Update a subtask's completion status.
+     *
+     * @param Task $task
+     * @param int $subtaskId
+     * @param bool $completed
+     * @return Task
+     */
+    public function updateSubtaskStatus(Task $task, int $subtaskId, bool $completed): Task
+    {
+        return $task->updateSubtaskStatus($subtaskId, $completed);
+    }
+    
+    /**
+     * Remove a subtask from a task.
+     *
+     * @param Task $task
+     * @param int $subtaskId
+     * @return Task
+     */
+    public function removeSubtask(Task $task, int $subtaskId): Task
+    {
+        return $task->removeSubtask($subtaskId);
+    }
 } 

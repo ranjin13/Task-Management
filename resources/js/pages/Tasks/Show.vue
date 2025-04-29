@@ -2,6 +2,8 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
+import SubtaskForm from '@/components/Subtask/SubtaskForm.vue';
+import SubtaskList from '@/components/Subtask/SubtaskList.vue';
 
 // Props for task data
 const props = defineProps<{
@@ -14,6 +16,17 @@ const props = defineProps<{
     is_published: boolean;
     created_at: string;
     updated_at: string;
+    subtasks?: {
+      id: number;
+      title: string;
+      description: string | null;
+      completed: boolean;
+      created_at: string;
+      updated_at?: string;
+    }[];
+    subtasks_count?: number;
+    completed_subtasks_count?: number;
+    subtasks_progress?: number;
   };
 }>();
 
@@ -146,6 +159,21 @@ const breadcrumbs: BreadcrumbItem[] = [
             <p class="text-gray-500 dark:text-gray-400">No image attached</p>
           </div>
         </div>
+      </div>
+
+      <!-- Subtasks Section -->
+      <div class="mt-4 grid grid-cols-1 gap-4">
+        <!-- Subtask Form -->
+        <div class="rounded-lg border bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <h2 class="mb-4 text-lg font-semibold">Add Subtask</h2>
+          <SubtaskForm :task-id="task.id" />
+        </div>
+
+        <!-- Subtask List -->
+        <SubtaskList 
+          :task-id="task.id"
+          :subtasks="task.subtasks || null"
+        />
       </div>
 
       <div class="mt-4">

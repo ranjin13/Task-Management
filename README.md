@@ -10,6 +10,7 @@ A modern and responsive task management application built with Laravel and Vue.j
 - Filter tasks by status (to-do, in-progress, done)
 - Search tasks by title
 - Publish/unpublish tasks to control visibility
+- Subtasks with progress tracking and auto-completion
 - Task validation with custom rules
 - Image attachment support for tasks
 
@@ -50,6 +51,9 @@ A modern and responsive task management application built with Laravel and Vue.j
 - **Status**: Must be one of: to-do, in-progress, done
 - **Image Attachments**: Optional, accepts standard image formats, max 4MB
 - **Publication Status**: Toggle for controlling task visibility
+- **Subtasks**: JSON-based subtasks stored in the same table
+  - Progress tracking with completion percentage
+  - Automatic task completion when all subtasks are done
 
 ## Architecture
 The application follows a service-oriented architecture with an Inertia.js monolith approach:
