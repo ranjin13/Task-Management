@@ -4,14 +4,6 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-// Define the form data structure
-interface TaskForm {
-  title: string;
-  description: string;
-  status: 'to-do' | 'in-progress' | 'done';
-  is_published: boolean;
-  image: File | null;
-}
 
 // Form for task creation
 const form = useForm({

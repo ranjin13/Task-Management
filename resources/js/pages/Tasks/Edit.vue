@@ -16,16 +16,6 @@ const props = defineProps<{
   };
 }>();
 
-// Define form interface
-interface TaskForm {
-  title: string;
-  description: string;
-  status: 'to-do' | 'in-progress' | 'done';
-  is_published: boolean;
-  image: File | null;
-  _method: string;
-}
-
 // Form for task update (without generic type parameter)
 const form = useForm({
   title: props.task.title,

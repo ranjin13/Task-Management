@@ -25,10 +25,10 @@ declare module '@inertiajs/vue3' {
     progress: {
       percentage: number | null;
     } | null;
-    post: (url: string, options?: any) => Promise<void>;
-    put: (url: string, options?: any) => Promise<void>;
-    patch: (url: string, options?: any) => Promise<void>;
-    delete: (url: string, options?: any) => Promise<void>;
+    post: (url: string, options?: Record<string, unknown>) => Promise<void>;
+    put: (url: string, options?: Record<string, unknown>) => Promise<void>;
+    patch: (url: string, options?: Record<string, unknown>) => Promise<void>;
+    delete: (url: string, options?: Record<string, unknown>) => Promise<void>;
     reset: (...fields: string[]) => void;
     [key: string]: any;
   };
@@ -57,17 +57,17 @@ declare module 'vue' {
 declare module 'lucide-vue-next' {
   import { DefineComponent } from 'vue';
   
-  const Search: DefineComponent<{}, {}, any>;
-  const Plus: DefineComponent<{}, {}, any>;
-  const ArrowDown: DefineComponent<{}, {}, any>;
-  const ArrowUp: DefineComponent<{}, {}, any>;
-  const List: DefineComponent<{}, {}, any>;
-  const BookOpen: DefineComponent<{}, {}, any>;
-  const Folder: DefineComponent<{}, {}, any>;
-  const LayoutGrid: DefineComponent<{}, {}, any>;
-  const CheckCircle: DefineComponent<{}, {}, any>;
-  const Clock: DefineComponent<{}, {}, any>;
-  const ClipboardList: DefineComponent<{}, {}, any>;
+  const Search: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const Plus: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const ArrowDown: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const ArrowUp: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const List: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const BookOpen: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const Folder: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const LayoutGrid: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const CheckCircle: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const Clock: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
+  const ClipboardList: DefineComponent<Record<string, unknown>, Record<string, unknown>, any>;
   
   export { 
     Search, Plus, ArrowDown, ArrowUp, List, 

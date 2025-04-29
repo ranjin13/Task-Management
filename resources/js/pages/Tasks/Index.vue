@@ -70,7 +70,6 @@ const metaData = tasks.meta || tasks;
 const paginationFrom = metaData.from || 1;
 const paginationTo = metaData.to || (tasks.data?.length || 0);
 const paginationTotal = metaData.total || (tasks.data?.length || 0);
-const paginationLinks = metaData.links || [];
 const currentPage = metaData.current_page || 1;
 const lastPage = metaData.last_page || 1;
 
@@ -231,37 +230,6 @@ function handleImageError(e: Event) {
   };
 }
 
-// Handle pagination link clicks with filters
-function handlePaginationClick(url: string) {
-  // Parse the page number from the URL
-  const urlObj = new URL(url);
-  const page = urlObj.searchParams.get('page');
-  
-  // Create params with current filters plus page
-  const params: Record<string, string | number | null> = {};
-  if (status.value) params.status = status.value;
-  if (search.value) params.search = search.value;
-  params.order_by = orderBy.value;
-  params.order_direction = orderDirection.value;
-  params.per_page = perPage.value;
-  if (page) params.page = page;
-  
-  console.log('Pagination with filters:', params);
-  
-  // Navigate using router to maintain state
-  router.get(
-    route('tasks.index'),
-    params,
-    {
-      preserveState: false,
-      preserveScroll: true,
-      replace: true,
-      onSuccess: () => {
-        console.log('Pagination successful');
-      }
-    }
-  );
-}
 
 // Function to change page
 function changePage(page: number) {
@@ -298,8 +266,6 @@ function changePage(page: number) {
   );
 }
 
-// Normal variables instead of computed properties
-const actualTotal = Math.max(metaData.total || 0, tasks.data.length);
 // Use manual page calculation if needed
 const manualTotalPages = getManualTotalPages();
 const totalPages = metaData.last_page || 1; // Use the backend's last_page value directly
