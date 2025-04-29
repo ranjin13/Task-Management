@@ -303,10 +303,6 @@ function calculateTotalPages() {
   return '';
 }
 
-// Add this right after tasks and filters variables are defined
-// console.log('Tasks data received from backend:', JSON.parse(JSON.stringify(tasks)));
-// console.log('Meta data structure:', JSON.stringify(tasks.meta, null, 2));
-// console.log('Props structure:', JSON.stringify(props, null, 2));
 
 // Function to manually count pages
 function getManualTotalPages() {
@@ -326,8 +322,6 @@ function getManualTotalPages() {
     isLastPage: apiReportedTotal <= currentPerPage || visibleCount < currentPerPage
   });
   
-  // If we have fewer items than the per_page setting, we're likely on the last page
-  // OR if the API reported total is less than or equal to per_page
   const isLastPage = apiReportedTotal <= currentPerPage || visibleCount < currentPerPage;
   
   // If we're on the last page and have items, we can estimate total
