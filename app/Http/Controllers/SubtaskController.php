@@ -2,36 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Task;
+use App\Http\Requests\DestroySubtaskRequest;
+use App\Http\Requests\StoreSubtaskRequest;
+use App\Http\Requests\ToggleSubtaskRequest;
+use App\Services\SubtaskService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Task;
 use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
 
 class SubtaskController extends Controller
 {
-    /**
-     * Store a newly created subtask in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'task_id' => 'required|integer|exists:tasks,id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
-        ]);
+    protected $subtaskService;
 
+    public function __construct(SubtaskService $subtaskService)
+    {
+        $this->subtaskService = $subtaskService;
+    }
+
+    public function store(StoreSubtaskRequest $request)
+    {
+        // Get the validated data
+        $validated = $request->validated();
+        
         // Verify the task belongs to the authenticated user
         $task = Task::findOrFail($validated['task_id']);
+        
         if ($task->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Add the subtask using the task model's method
-        $task->addSubtask(
+        // Use the service to store the subtask
+        $this->subtaskService->store(
+            $validated['task_id'],
             $validated['title'],
             $validated['description'] ?? null
         );
@@ -39,66 +42,38 @@ class SubtaskController extends Controller
         return Redirect::back()->with('success', 'Subtask created successfully.');
     }
 
-    /**
-     * Toggle the completion status of the specified subtask.
-     *
-     * @param  int  $subtaskId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function toggle(Request $request, $subtaskId)
+    public function toggle(ToggleSubtaskRequest $request, $subtaskId)
     {
-        // Get the task ID from the request
-        $taskId = $request->input('task_id');
-        if (!$taskId) {
-            abort(400, 'Task ID is required.');
-        }
-
-        // Find the task and verify ownership
-        $task = Task::findOrFail($taskId);
+        // Get the validated data
+        $validated = $request->validated();
+        
+        // Verify the task belongs to the authenticated user
+        $task = Task::findOrFail($validated['task_id']);
+        
         if ($task->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Find the subtask within the task's subtasks
-        $subtask = collect($task->subtasks)->firstWhere('id', (int) $subtaskId);
-        if (!$subtask) {
-            abort(404, 'Subtask not found.');
-        }
-
-        // Toggle the status (pass the opposite of current status)
-        $task->updateSubtaskStatus((int) $subtaskId, !$subtask['completed']);
+        // Use the service to toggle the subtask status
+        $this->subtaskService->toggle($validated['task_id'], (int) $subtaskId);
 
         return Redirect::back()->with('success', 'Subtask status updated.');
     }
 
-    /**
-     * Remove the specified subtask from storage.
-     *
-     * @param  int  $subtaskId
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy(Request $request, $subtaskId)
+    public function destroy(DestroySubtaskRequest $request, $subtaskId)
     {
-        // Get the task ID from the request
-        $taskId = $request->input('task_id');
-        if (!$taskId) {
-            abort(400, 'Task ID is required.');
-        }
-
-        // Find the task and verify ownership
-        $task = Task::findOrFail($taskId);
+        // Get the validated data
+        $validated = $request->validated();
+        
+        // Verify the task belongs to the authenticated user
+        $task = Task::findOrFail($validated['task_id']);
+        
         if ($task->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Find the subtask within the task's subtasks
-        $subtask = collect($task->subtasks)->firstWhere('id', (int) $subtaskId);
-        if (!$subtask) {
-            abort(404, 'Subtask not found.');
-        }
-
-        // Remove the subtask
-        $task->removeSubtask((int) $subtaskId);
+        // Use the service to destroy the subtask
+        $this->subtaskService->destroy($validated['task_id'], (int) $subtaskId);
 
         return Redirect::back()->with('success', 'Subtask deleted successfully.');
     }

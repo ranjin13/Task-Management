@@ -80,7 +80,7 @@ const deleteSubtask = (subtaskId: number) => {
             <input
               type="checkbox"
               :checked="subtask.completed"
-              @change="toggleCompletion(subtask.id, subtask.completed)"
+              @change="toggleCompletion(subtask.id)"
               class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700"
             />
           </div>
