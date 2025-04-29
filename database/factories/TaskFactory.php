@@ -11,18 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TaskFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
     protected $model = Task::class;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
@@ -38,11 +28,6 @@ class TaskFactory extends Factory
         ];
     }
 
-    /**
-     * Configure the model factory to create tasks with 'to-do' status.
-     *
-     * @return $this
-     */
     public function todo(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -50,11 +35,6 @@ class TaskFactory extends Factory
         ]);
     }
 
-    /**
-     * Configure the model factory to create tasks with 'in-progress' status.
-     *
-     * @return $this
-     */
     public function inProgress(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -62,11 +42,6 @@ class TaskFactory extends Factory
         ]);
     }
 
-    /**
-     * Configure the model factory to create tasks with 'done' status.
-     *
-     * @return $this
-     */
     public function done(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -74,11 +49,6 @@ class TaskFactory extends Factory
         ]);
     }
 
-    /**
-     * Configure the model factory to create published tasks.
-     *
-     * @return $this
-     */
     public function published(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -86,11 +56,6 @@ class TaskFactory extends Factory
         ]);
     }
 
-    /**
-     * Configure the model factory to create unpublished tasks.
-     *
-     * @return $this
-     */
     public function unpublished(): static
     {
         return $this->state(fn (array $attributes) => [
