@@ -29,9 +29,6 @@ class TaskService
             $query->where('title', 'like', '%' . $request->search . '%');
         }
         
-        $totalCount = $query->count();
-        Debugbar::info('Total task count before pagination:', ['count' => $totalCount]);
-        
         // Apply ordering
         $orderBy = $request->input('order_by', 'created_at');
         $orderDirection = $request->input('order_direction', 'desc');
@@ -50,10 +47,6 @@ class TaskService
         
         $tasks = $query->paginate($perPage)->withQueryString();
         
-        // If the paginator total is wrong, fix it
-        if ($tasks->total() != $totalCount) {
-            $tasks->setTotal($totalCount);
-        }
         
         // Make sure pagination metadata is explicitly included
         $tasksArray = $tasks->toArray();
