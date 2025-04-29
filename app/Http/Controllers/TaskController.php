@@ -93,7 +93,7 @@ class TaskController extends Controller
     }
 
     /**
-     * Remove the specified task from storage.
+     * Remove the specified task from storage (soft delete).
      */
     public function destroy(Task $task)
     {
@@ -101,9 +101,47 @@ class TaskController extends Controller
             abort(403);
         }
         
-        $this->taskService->destroy($task);
+        $this->taskService->softDelete($task);
         
-        return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
+        return redirect()->route('tasks.index')->with('success', 'Task moved to trash.');
+    }
+    
+    /**
+     * Display a listing of the trashed tasks.
+     */
+    public function trashed(Request $request)
+    {
+        $data = $this->taskService->getTrashed($request);
+        
+        return Inertia::render('Tasks/Trashed', $data);
+    }
+    
+    /**
+     * Restore the specified task from trash.
+     */
+    public function restore($id)
+    {
+        $task = $this->taskService->restore($id);
+        
+        if (!$task) {
+            return redirect()->route('tasks.trashed')->with('error', 'Task not found or not authorized.');
+        }
+        
+        return redirect()->route('tasks.trashed')->with('success', 'Task restored successfully.');
+    }
+    
+    /**
+     * Permanently delete the specified task from storage.
+     */
+    public function forceDelete($id)
+    {
+        $result = $this->taskService->forceDelete($id);
+        
+        if (!$result) {
+            return redirect()->route('tasks.trashed')->with('error', 'Task not found or not authorized.');
+        }
+        
+        return redirect()->route('tasks.trashed')->with('success', 'Task permanently deleted.');
     }
     
     /**

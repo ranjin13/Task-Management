@@ -208,4 +208,99 @@ class TaskService
     {
         return $task->removeSubtask($subtaskId);
     }
+
+    /**
+     * Move a task to trash (soft delete).
+     *
+     * @param Task $task
+     * @return bool
+     */
+    public function softDelete(Task $task): bool
+    {
+        return $task->delete();
+    }
+
+    /**
+     * Restore a task from trash.
+     *
+     * @param int $taskId
+     * @return Task|null
+     */
+    public function restore(int $taskId): ?Task
+    {
+        $task = Task::onlyTrashed()->find($taskId);
+        
+        if (!$task) {
+            return null;
+        }
+        
+        if ($task->user_id !== Auth::id()) {
+            return null;
+        }
+        
+        $task->restore();
+        
+        return $task;
+    }
+
+    /**
+     * Get trashed tasks.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public function getTrashed(Request $request): array
+    {
+        $query = Task::onlyTrashed()->where('user_id', Auth::id());
+        
+        // Apply ordering
+        $orderBy = $request->input('order_by', 'deleted_at');
+        $orderDirection = $request->input('order_direction', 'desc');
+        
+        if (in_array($orderBy, ['title', 'deleted_at']) && in_array($orderDirection, ['asc', 'desc'])) {
+            $query->orderBy($orderBy, $orderDirection);
+        }
+        
+        // Apply pagination
+        $perPage = $request->input('per_page', 10);
+        if (!in_array($perPage, [10, 20, 50, 100])) {
+            $perPage = 10;
+        }
+        
+        $trashedTasks = $query->paginate($perPage)->withQueryString();
+        
+        return [
+            'trashedTasks' => $trashedTasks,
+            'filters' => [
+                'order_by' => $orderBy,
+                'order_direction' => $orderDirection,
+                'per_page' => $perPage,
+            ],
+        ];
+    }
+
+    /**
+     * Permanently delete a task.
+     *
+     * @param int $taskId
+     * @return bool
+     */
+    public function forceDelete(int $taskId): bool
+    {
+        $task = Task::onlyTrashed()->find($taskId);
+        
+        if (!$task) {
+            return false;
+        }
+        
+        if ($task->user_id !== Auth::id()) {
+            return false;
+        }
+        
+        if ($task->image_path) {
+            Storage::disk('public')->delete($task->image_path);
+        }
+        
+        return $task->forceDelete();
+    }
 } 

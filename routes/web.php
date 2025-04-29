@@ -15,6 +15,11 @@ Route::get('dashboard', function () {
 
 // Task routes
 Route::middleware(['auth'])->group(function () {
+    // Task trash routes
+    Route::get('tasks/trashed', [TaskController::class, 'trashed'])->name('tasks.trashed');
+    Route::post('tasks/{id}/restore', [TaskController::class, 'restore'])->name('tasks.restore');
+    Route::delete('tasks/{id}/force-delete', [TaskController::class, 'forceDelete'])->name('tasks.force-delete');
+    
     Route::resource('tasks', TaskController::class);
     Route::patch('tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.update-status');
     Route::patch('tasks/{task}/toggle-published', [TaskController::class, 'togglePublished'])->name('tasks.toggle-published');
