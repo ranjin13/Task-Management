@@ -19,7 +19,9 @@ const submitForm = () => {
   form.post(route('subtasks.store'), {
     preserveScroll: true,
     onSuccess: () => {
-      console.log('Subtask added successfully');
+        form.reset('title', 'description');
+        isSubmitting.value = false;
+        console.log('Subtask added successfully');
     },
     onFinish: () => {
       form.reset('title', 'description');

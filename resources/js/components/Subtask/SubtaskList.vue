@@ -28,7 +28,7 @@ const toggleForm = useForm({
 });
 
 // Function to toggle subtask completion status
-const toggleCompletion = (subtaskId: number, currentStatus: boolean) => {
+const toggleCompletion = (subtaskId: number) => {
   // Make sure task_id is set before submitting
   toggleForm.task_id = props.taskId;
   
