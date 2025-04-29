@@ -27,7 +27,7 @@ A modern and responsive task management application built with Laravel and Vue.j
 - **Laravel Framework**: Robust PHP framework for the backend
 - **Service Layer Architecture**: Separation of concerns with dedicated service classes
 - **Form Request Validation**: Advanced validation rules for task creation and updates
-- **RESTful API**: Well-structured API endpoints for task operations
+- **Inertia-based Communication**: Server-side controllers that communicate directly with the frontend via Inertia.js instead of traditional API endpoints
 - **Image Storage**: Secure image upload and storage for task attachments
 - **Laravel Debugbar**: Enhanced debugging tools for development
 - **Authentication System**: Secure user authentication and authorization
@@ -52,12 +52,12 @@ A modern and responsive task management application built with Laravel and Vue.j
 - **Publication Status**: Toggle for controlling task visibility
 
 ## Architecture
-The application follows a service-oriented architecture:
-- **Controllers**: Handle HTTP requests and responses
+The application follows a service-oriented architecture with an Inertia.js monolith approach:
+- **Controllers**: Handle HTTP requests and return Inertia responses that render Vue components
 - **Services**: Contain business logic for task operations
 - **Form Requests**: Validate incoming data
 - **Models**: Represent database entities and relationships
-- **Views**: Built with Vue.js components for a reactive UI
+- **Vue Components**: Frontend views rendered via Inertia.js without separate API endpoints
 
 ## Development Workflow
 - ESLint and TypeScript for code quality
