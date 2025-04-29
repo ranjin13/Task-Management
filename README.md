@@ -1,6 +1,6 @@
 # TK Service Task Management Application
 
-A modern and responsive task management application built with Laravel and Vue.js. This application allows users to create, manage, and organize their tasks with a user-friendly interface and robust backend.
+A modern and responsive task management application built with Laravel 12 and Vue.js. This application allows users to create, manage, and organize their tasks with a user-friendly interface and robust backend.
 
 ## Features
 
@@ -13,6 +13,8 @@ A modern and responsive task management application built with Laravel and Vue.j
 - Subtasks with progress tracking and auto-completion
 - Task validation with custom rules
 - Image attachment support for tasks
+- Trash bin for deleted tasks with restoration and permanent deletion options
+- Automatic cleanup of trashed tasks after 30 days
 
 ### User Interface
 - Responsive design that works on desktop and mobile devices
@@ -21,17 +23,20 @@ A modern and responsive task management application built with Laravel and Vue.j
 - Pagination for large task lists
 - Sort tasks by creation date or title
 - Adjustable number of tasks per page (10, 20, 50, 100 options)
+- Dedicated trash page to manage deleted tasks
 
 ### Technical Implementation
 
 #### Backend
-- **Laravel Framework**: Robust PHP framework for the backend
+- **Laravel 12 Framework**: Robust PHP framework for the backend
 - **Service Layer Architecture**: Separation of concerns with dedicated service classes
 - **Form Request Validation**: Advanced validation rules for task creation and updates
 - **Inertia-based Communication**: Server-side controllers that communicate directly with the frontend via Inertia.js instead of traditional API endpoints
 - **Image Storage**: Secure image upload and storage for task attachments
 - **Laravel Debugbar**: Enhanced debugging tools for development
 - **Authentication System**: Secure user authentication and authorization
+- **Soft Deletes**: Laravel's SoftDeletes trait for trash management
+- **Scheduled Commands**: Automatic cleanup via Laravel's task scheduler
 
 #### Frontend
 - **Vue.js 3**: Progressive JavaScript framework for building the UI
@@ -44,6 +49,7 @@ A modern and responsive task management application built with Laravel and Vue.j
 - **PostgreSQL**: Powerful, open-source object-relational database
 - **Migrations**: Version-controlled database schema changes
 - **Seeders**: Sample data for testing and development
+- **Soft Delete Columns**: Database structure optimized for trash functionality
 
 ## Task Features
 - **Title**: Required, unique, maximum 100 characters
@@ -54,6 +60,11 @@ A modern and responsive task management application built with Laravel and Vue.j
 - **Subtasks**: JSON-based subtasks stored in the same table
   - Progress tracking with completion percentage
   - Automatic task completion when all subtasks are done
+- **Trash Management**:
+  - Soft deletion that moves tasks to trash instead of immediate removal
+  - Restore option to recover tasks from trash
+  - Permanent deletion option
+  - Auto-cleanup after 30 days with countdown display
 
 ## Architecture
 The application follows a service-oriented architecture with an Inertia.js monolith approach:
@@ -62,6 +73,7 @@ The application follows a service-oriented architecture with an Inertia.js monol
 - **Form Requests**: Validate incoming data
 - **Models**: Represent database entities and relationships
 - **Vue Components**: Frontend views rendered via Inertia.js without separate API endpoints
+- **Console Commands**: Scheduled tasks for maintenance operations
 
 ## Development Workflow
 - ESLint and TypeScript for code quality
