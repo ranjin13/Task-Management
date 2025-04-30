@@ -10,6 +10,8 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected User $user;
+
     public function test_login_screen_can_be_rendered()
     {
         $response = $this->get('/login');
@@ -23,7 +25,7 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post('/login', [
             'email' => $user->email,
-            'password' => 'password',
+            'password' => 'password123',
         ]);
 
         $this->assertAuthenticated();
@@ -44,9 +46,9 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_logout()
     {
-        $user = User::factory()->create();
+        $this->user = User::factory()->create();
 
-        $response = $this->actingAs($user)->post('/logout');
+        $response = $this->actingAs($this->user)->post('/logout');
 
         $this->assertGuest();
         $response->assertRedirect('/');

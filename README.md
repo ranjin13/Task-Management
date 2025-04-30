@@ -75,6 +75,63 @@ The application follows a service-oriented architecture with an Inertia.js monol
 - **Vue Components**: Frontend views rendered via Inertia.js without separate API endpoints
 - **Console Commands**: Scheduled tasks for maintenance operations
 
+## Testing
+
+The application is extensively tested with PHPUnit to ensure reliability and correctness. Our test suite includes:
+
+- **Unit Tests**: Testing individual components in isolation
+- **Feature Tests**: Testing application features from controller to response
+- **Task Tests**: Testing all CRUD operations, status updates, filtering, and sorting
+- **Subtask Tests**: Testing adding, toggling, and deleting subtasks
+- **Trash Management Tests**: Testing soft deletion, restoration, and permanent deletion
+- **Authorization Tests**: Ensuring users can only access their own tasks
+
+### Running Tests
+
+Use our convenient test runner scripts:
+
+**Windows:**
+```bash
+# Run all tests
+.\run-tests.bat
+
+# Run specific test groups
+.\run-tests.bat task    # Run Task tests
+.\run-tests.bat trash   # Run Task Trash tests
+.\run-tests.bat auth    # Run Authentication tests
+.\run-tests.bat unit    # Run all Unit tests
+.\run-tests.bat feature # Run all Feature tests
+
+# Run a specific test
+.\run-tests.bat filter test_task_can_be_created
+```
+
+**Unix/Linux/Mac:**
+```bash
+# Make the script executable
+chmod +x run-tests.sh
+
+# Run all tests
+./run-tests.sh
+
+# Run specific test groups
+./run-tests.sh task    # Run Task tests
+./run-tests.sh trash   # Run Task Trash tests
+./run-tests.sh auth    # Run Authentication tests
+./run-tests.sh unit    # Run all Unit tests
+./run-tests.sh feature # Run all Feature tests
+
+# Run a specific test
+./run-tests.sh filter test_task_can_be_created
+```
+
+Or use the standard Laravel command:
+```bash
+php artisan test
+```
+
+For detailed information about our testing approach, test cases, and troubleshooting, see [TESTING.md](TESTING.md).
+
 ## Development Workflow
 - ESLint and TypeScript for code quality
 - GitHub Actions for automated testing and linting

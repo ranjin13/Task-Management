@@ -39,7 +39,7 @@ jobs:
           php-version: 8.4
           tools: composer:v2
           coverage: xdebug
-          extensions: pdo, pdo_pgsql
+          extensions: pdo, pdo_pgsql, gd
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -77,9 +77,28 @@ jobs:
       - name: Build Assets
         run: npm run build
 
-      # Tests temporarily disabled
-      # - name: Tests
-      #   run: ./vendor/bin/phpunit
+      - name: Configure Testing Environment
+        run: |
+          echo "APP_ENV=testing" > .env.testing
+          echo "DB_CONNECTION=pgsql" >> .env.testing
+          echo "DB_HOST=localhost" >> .env.testing
+          echo "DB_PORT=5432" >> .env.testing
+          echo "DB_DATABASE=testing" >> .env.testing
+          echo "DB_USERNAME=postgres" >> .env.testing
+          echo "DB_PASSWORD=postgres" >> .env.testing
+          echo "CACHE_DRIVER=array" >> .env.testing
+          echo "SESSION_DRIVER=array" >> .env.testing
+          echo "QUEUE_CONNECTION=sync" >> .env.testing
+
+      - name: Debug Information
+        run: |
+          php --version
+          php -m | grep -E 'gd|pgsql'
+          php artisan --version
+
+      # Tests are now enabled
+      - name: Tests
+        run: php artisan test --env=testing
       
-      - name: Skip Tests
-        run: echo "Tests are temporarily skipped"
+      # - name: Skip Tests
+      #   run: echo "Tests are temporarily skipped"
