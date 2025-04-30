@@ -90,11 +90,26 @@ jobs:
           echo "SESSION_DRIVER=array" >> .env.testing
           echo "QUEUE_CONNECTION=sync" >> .env.testing
 
+      - name: Generate Application Key for Testing
+        run: |
+          # Generate a key directly for the testing environment
+          php artisan key:generate --env=testing --force
+          # Verify the key was generated
+          echo "Testing environment APP_KEY:"
+          grep APP_KEY .env.testing
+
       - name: Debug Information
         run: |
           php --version
           php -m | grep -E 'gd|pgsql'
           php artisan --version
+
+      - name: Clear Caches
+        run: |
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
 
       # Tests are now enabled
       - name: Tests
