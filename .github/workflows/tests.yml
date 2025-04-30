@@ -79,30 +79,44 @@ jobs:
 
       - name: Configure Testing Environment
         run: |
-          echo "APP_ENV=testing" > .env.testing
-          echo "DB_CONNECTION=pgsql" >> .env.testing
-          echo "DB_HOST=localhost" >> .env.testing
-          echo "DB_PORT=5432" >> .env.testing
-          echo "DB_DATABASE=testing" >> .env.testing
-          echo "DB_USERNAME=postgres" >> .env.testing
-          echo "DB_PASSWORD=postgres" >> .env.testing
-          echo "CACHE_DRIVER=array" >> .env.testing
-          echo "SESSION_DRIVER=array" >> .env.testing
-          echo "QUEUE_CONNECTION=sync" >> .env.testing
-
-      - name: Generate Application Key for Testing
-        run: |
-          # Generate a key directly for the testing environment
-          php artisan key:generate --env=testing --force
-          # Verify the key was generated
-          echo "Testing environment APP_KEY:"
-          grep APP_KEY .env.testing
+          # Create testing environment file with all necessary variables including a hardcoded APP_KEY for CI
+          cat > .env.testing << 'EOL'
+          APP_ENV=testing
+          APP_DEBUG=true
+          APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+          
+          DB_CONNECTION=pgsql
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_DATABASE=testing
+          DB_USERNAME=postgres
+          DB_PASSWORD=postgres
+          
+          BROADCAST_DRIVER=log
+          CACHE_DRIVER=array
+          FILESYSTEM_DISK=local
+          QUEUE_CONNECTION=sync
+          SESSION_DRIVER=array
+          SESSION_LIFETIME=120
+          
+          MAIL_MAILER=array
+          EOL
+          
+          # Generate a random key
+          KEY=$(php -r "echo base64_encode(random_bytes(32));")
+          # Replace the placeholder with the actual key
+          sed -i "s|APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|APP_KEY=base64:$KEY|" .env.testing
 
       - name: Debug Information
         run: |
           php --version
           php -m | grep -E 'gd|pgsql'
           php artisan --version
+          echo "Main .env file:"
+          cat .env | grep -v PASSWORD
+          echo "-----------------------"
+          echo "Testing .env file:"
+          cat .env.testing | grep -v PASSWORD
 
       - name: Clear Caches
         run: |
@@ -111,8 +125,31 @@ jobs:
           php artisan route:clear
           php artisan view:clear
 
+      - name: Verify App Key is Working
+        run: |
+          # Test that Laravel can read the app key from config
+          APP_KEY_VALUE=$(php artisan tinker --env=testing --execute="echo config('app.key');")
+          echo "Laravel app.key config value: $APP_KEY_VALUE"
+          
+          # Verify Laravel can use the encryption key
+          ENCRYPTED=$(php artisan tinker --env=testing --execute="echo encrypt('test-string');")
+          echo "Encrypted value: $ENCRYPTED"
+          
+          DECRYPTED=$(php artisan tinker --env=testing --execute="echo decrypt('$ENCRYPTED');")
+          echo "Decrypted value: $DECRYPTED"
+          
+          # Confirm decryption worked
+          if [ "$DECRYPTED" = "test-string" ]; then
+            echo "✅ Encryption/decryption test passed"
+          else
+            echo "❌ Encryption/decryption test failed"
+            exit 1
+          fi
+
       # Tests are now enabled
       - name: Tests
+        env:
+          APP_ENV: testing
         run: php artisan test --env=testing
       
       # - name: Skip Tests
