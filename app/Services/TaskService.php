@@ -6,7 +6,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Barryvdh\Debugbar\Facades\Debugbar;
+// use Barryvdh\Debugbar\Facades\Debugbar;
 
 class TaskService
 {
@@ -43,7 +43,10 @@ class TaskService
             $perPage = 10;
         }
         
-        Debugbar::info('Query executed:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        // Debug only in local/debug environment
+        if (app()->environment('local') && class_exists('Barryvdh\Debugbar\Facades\Debugbar')) {
+            \Barryvdh\Debugbar\Facades\Debugbar::info('Query executed:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
+        }
         
         $tasks = $query->paginate($perPage)->withQueryString();
         
@@ -51,7 +54,10 @@ class TaskService
         // Make sure pagination metadata is explicitly included
         $tasksArray = $tasks->toArray();
         
-        Debugbar::info('Raw tasks array:', ['tasksArray' => $tasksArray]);
+        // Debug only in local/debug environment
+        if (app()->environment('local') && class_exists('Barryvdh\Debugbar\Facades\Debugbar')) {
+            \Barryvdh\Debugbar\Facades\Debugbar::info('Raw tasks array:', ['tasksArray' => $tasksArray]);
+        }
         
         // Ensure the meta property exists with all pagination info
         if (!isset($tasksArray['meta']) || !is_array($tasksArray['meta'])) {
