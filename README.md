@@ -66,6 +66,28 @@ A modern and responsive task management application built with Laravel 12 and Vu
   - Permanent deletion option
   - Auto-cleanup after 30 days with countdown display
 
+## Deployment Notes
+
+### Laravel Cloud Deployment
+When deploying to Laravel Cloud, please note the following considerations:
+
+1. **Image Upload Handling**: Large image uploads (typically >1MB) may be buffered to temporary files by Nginx. This is normal behavior and not an error, but you might see related warnings in the server logs.
+
+2. **Storage Configuration**: 
+   - **Important**: Using Laravel's local storage driver is not suitable for Laravel Cloud production environments as files will not persist between deployments
+   - For production, use a cloud-based storage driver like Amazon S3 instead of local storage
+   - Without proper cloud storage configuration, uploaded images will be lost during deployments
+
+3. **Image Size Limitations**:
+   - Consider keeping image uploads under 4MB for optimal performance
+   - Large images may cause slower page loads and increased server resource usage
+   - The application includes fallback handling for missing images
+
+4. **File Cleanup**:
+   - Laravel Cloud environments may have limitations on storage space
+   - Consider implementing periodic cleanup of old or unused images
+   - Permanently deleted tasks will automatically clean up their associated images
+
 ## Architecture
 The application follows a service-oriented architecture with an Inertia.js monolith approach:
 - **Controllers**: Handle HTTP requests and return Inertia responses that render Vue components
