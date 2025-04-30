@@ -525,10 +525,10 @@ const breadcrumbs: BreadcrumbItem[] = [
               </td>
               <td class="px-6 py-4 text-center">
                 <div v-if="task.image_path" class="flex justify-center">
-                  <img 
-                    :src="'/storage/' + task.image_path" 
-                    alt="Task Image" 
-                    class="h-16 w-16 object-cover rounded-md border border-gray-200 shadow-sm hover:scale-150 transition-transform cursor-zoom-in"
+                  <img
+                    class="h-32 w-auto rounded-md object-cover shadow-sm"
+                    :src="task.image_url || '/storage/' + task.image_path"
+                    :alt="task.title"
                     @error="handleImageError"
                   />
                 </div>

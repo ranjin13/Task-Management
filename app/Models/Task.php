@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Task extends Model
 {
@@ -46,6 +47,7 @@ class Task extends Model
         'subtasks_count',
         'completed_subtasks_count',
         'subtasks_progress',
+        'image_url',
     ];
 
     /**
@@ -90,6 +92,22 @@ class Task extends Model
         }
         
         return (int) round(($this->completed_subtasks_count / $this->subtasks_count) * 100);
+    }
+
+    /**
+     * Get the image URL.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image_path) {
+            return null;
+        }
+        
+        // Get the app URL from config
+        $appUrl = config('app.url');
+        
+        // For production environments, ensure we're using the correct storage URL
+        return $appUrl . '/storage/' . $this->image_path;
     }
 
     /**

@@ -27,6 +27,7 @@ const props = defineProps<{
     subtasks_count?: number;
     completed_subtasks_count?: number;
     subtasks_progress?: number;
+    image_url?: string;
   };
 }>();
 
@@ -58,6 +59,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     href: route('tasks.show', props.task.id),
   },
 ];
+
+function handleImageError(event: Event) {
+  // Handle image loading error
+  console.error('Error loading image:', event);
+}
 </script>
 
 <template>
@@ -146,11 +152,12 @@ const breadcrumbs: BreadcrumbItem[] = [
 
         <!-- Task image -->
         <div v-if="task.image_path" class="rounded-lg border bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h2 class="mb-4 text-lg font-semibold">Task Image</h2>
+          <h3 class="mb-3 text-lg font-semibold">Task Image</h3>
           <img
-            :src="`/storage/${task.image_path}`"
+            :src="task.image_url || `/storage/${task.image_path}`"
             :alt="task.title"
-            class="h-auto max-h-96 w-full rounded-lg object-contain"
+            class="max-h-96 w-auto rounded-md"
+            @error="handleImageError"
           />
         </div>
         <div v-else class="rounded-lg border bg-white p-6 dark:border-gray-700 dark:bg-gray-800">

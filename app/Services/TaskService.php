@@ -6,7 +6,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-// use Barryvdh\Debugbar\Facades\Debugbar;
+
 
 class TaskService
 {
@@ -99,7 +99,10 @@ class TaskService
         $task->is_published = $request->boolean('is_published', false);
         
         if ($request->hasFile('image')) {
+            // Store the image in the public disk
             $path = $request->file('image')->store('task-images', 'public');
+            
+            // Set the image path in the task model
             $task->image_path = $path;
         }
         
@@ -124,6 +127,7 @@ class TaskService
                 Storage::disk('public')->delete($task->image_path);
             }
             
+            // Store the new image
             $path = $request->file('image')->store('task-images', 'public');
             $task->image_path = $path;
         }

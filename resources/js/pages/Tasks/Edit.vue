@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 // Props for task data
 const props = defineProps<{
@@ -13,6 +13,7 @@ const props = defineProps<{
     status: 'to-do' | 'in-progress' | 'done';
     image_path: string | null;
     is_published: boolean;
+    image_url?: string;
   };
 }>();
 
@@ -27,20 +28,23 @@ const form = useForm({
 });
 
 // Preview image
-const imagePreview = ref<string | null>(
-  props.task.image_path 
-    ? `/storage/${props.task.image_path}` 
-    : null
-);
+const currentImage = computed(() => {
+  if (form.image instanceof File) {
+    return URL.createObjectURL(form.image);
+  }
+  
+  if (props.task.image_path) {
+    return props.task.image_url || `/storage/${props.task.image_path}`;
+  }
+  
+  return null;
+});
 
 // Handle image upload
 function handleImageUpload(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     form.image = input.files[0];
-    
-    // Create preview URL
-    imagePreview.value = URL.createObjectURL(input.files[0]);
   }
 }
 
@@ -133,8 +137,8 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div v-if="form.errors.image" class="mt-1 text-sm text-red-600">{{ form.errors.image }}</div>
             
             <!-- Image Preview -->
-            <div v-if="imagePreview" class="mt-4">
-              <img :src="imagePreview" alt="Task image preview" class="h-40 w-auto rounded-lg object-cover" />
+            <div v-if="currentImage" class="mt-4">
+              <img :src="currentImage" alt="Task image preview" class="h-40 w-auto rounded-lg object-cover" />
             </div>
           </div>
 

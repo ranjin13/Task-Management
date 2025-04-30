@@ -1,0 +1,53 @@
+name: Deploy to Laravel Cloud Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Create deployment artifact
+        run: |
+          # Create artifact directory
+          mkdir -p artifact
+          
+          # Copy all files except excluded ones
+          rsync -av --exclude='.git' --exclude='artifact' --exclude='node_modules' --exclude='.github' . artifact/
+          
+          # Create deployment script
+          cat > artifact/deploy.sh << 'EOL'
+          #!/bin/bash
+          
+          # Run migrations
+          php artisan migrate --force
+          
+          # Create storage link
+          php artisan storage:link --force
+          
+          # Clear caches
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
+          php artisan view:clear
+          EOL
+          
+          # Make script executable
+          chmod +x artifact/deploy.sh
+          
+          # Create zip file
+          cd artifact && zip -r ../deploy.zip .
+      
+      - name: Deploy to Laravel Cloud
+        uses: laravel/vapor-action@v1
+        with:
+          artifact: deploy.zip
+          environment: production
+        env:
+          VAPOR_API_TOKEN: ${{ secrets.VAPOR_API_TOKEN }} 
