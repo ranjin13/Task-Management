@@ -13,6 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: none
+          
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress
+        
       - name: Create deployment artifact
         run: |
           # Create artifact directory
@@ -25,17 +35,41 @@ jobs:
           cat > artifact/deploy.sh << 'EOL'
           #!/bin/bash
           
+          echo "Starting deployment script..."
+          
+          # Show environment info
+          echo "PHP Version: $(php -v | head -n 1)"
+          echo "Current directory: $(pwd)"
+          echo "Directory structure:"
+          ls -la
+          
           # Run migrations
           php artisan migrate --force
+          echo "Migrations completed."
           
           # Create storage link
           php artisan storage:link --force
+          echo "Storage link created."
+          
+          # Verify storage link
+          if [ -L "public/storage" ]; then
+            echo "Storage link exists at public/storage -> $(readlink public/storage)"
+            ls -la public/storage
+          else
+            echo "WARNING: Storage link was not created properly!"
+            echo "Creating storage directory in public as fallback..."
+            mkdir -p public/storage
+            chmod -R 775 public/storage
+          fi
           
           # Clear caches
           php artisan config:clear
           php artisan cache:clear
           php artisan route:clear
           php artisan view:clear
+          echo "Caches cleared."
+          
+          echo "Deployment script completed."
           EOL
           
           # Make script executable
@@ -45,7 +79,7 @@ jobs:
           cd artifact && zip -r ../deploy.zip .
       
       - name: Deploy to Laravel Cloud
-        uses: laravel/vapor-action@v1
+        uses: laravel/vapor-action@v1.5.0
         with:
           artifact: deploy.zip
           environment: production

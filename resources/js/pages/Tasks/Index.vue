@@ -214,22 +214,18 @@ function getStatusClass(status: string): string {
 // Handle image loading errors
 function handleImageError(e: Event) {
   const imgElement = e.target as HTMLImageElement;
-  imgElement.src = '/images/placeholder.png'; // Fallback to placeholder
-  imgElement.classList.add('image-error');
   
-  // Set a simple fallback if placeholder is not available
-  imgElement.onerror = function() {
-    imgElement.style.display = 'none';
-    const parent = imgElement.parentElement;
-    if (parent) {
-      const errorSpan = document.createElement('span');
-      errorSpan.className = 'text-xs text-gray-400';
-      errorSpan.innerText = 'Image unavailable';
-      parent.appendChild(errorSpan);
-    }
-  };
+  // Remove the onerror handler to prevent infinite loops
+  imgElement.onerror = null;
+  
+  // Log the error for debugging
+  console.error('Image loading error:', imgElement.src);
+  
+  // Instead of trying to load another image (which may fail),
+  // replace with a simple gray rectangle using a data URI
+  imgElement.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22128%22%20height%3D%22128%22%20viewBox%3D%220%200%20128%20128%22%3E%3Crect%20width%3D%22128%22%20height%3D%22128%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20style%3D%22dominant-baseline%3A%20middle%3B%20text-anchor%3A%20middle%3B%20font-size%3A%2012px%3B%20fill%3A%20%23999%3B%22%3ENo%20image%3C%2Ftext%3E%3C%2Fsvg%3E';
+  imgElement.classList.add('image-error');
 }
-
 
 // Function to change page
 function changePage(page: number) {

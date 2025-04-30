@@ -106,14 +106,24 @@ class Task extends Model
         // Get the app URL from config
         $appUrl = config('app.url');
         
-        // For production environments, ensure we're using the correct storage URL
+        // Check if the image path already has a full URL
+        if (str_starts_with($this->image_path, 'http')) {
+            return $this->image_path;
+        }
+        
+        // If path already contains 'storage', don't add it again
+        if (str_contains($this->image_path, 'storage/')) {
+            return $appUrl . '/' . $this->image_path;
+        }
+        
+        // Standard case - return the full URL to the image
         return $appUrl . '/storage/' . $this->image_path;
     }
 
     /**
      * Add a subtask to the task.
      */
-    public function addSubtask(string $title, string $description = null): self
+    public function addSubtask(string $title, string $description): self
     {
         $subtasks = $this->subtasks ?? [];
         

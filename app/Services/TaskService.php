@@ -189,7 +189,7 @@ class TaskService
      * @param string|null $description
      * @return Task
      */
-    public function addSubtask(Task $task, string $title, string $description = null): Task
+    public function addSubtask(Task $task, string $title, string $description): Task
     {
         return $task->addSubtask($title, $description);
     }

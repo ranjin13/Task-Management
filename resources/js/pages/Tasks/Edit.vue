@@ -2,7 +2,6 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
 
 // Props for task data
 const props = defineProps<{
@@ -17,7 +16,7 @@ const props = defineProps<{
   };
 }>();
 
-// Form for task update (without generic type parameter)
+// Form for task update
 const form = useForm({
   title: props.task.title,
   description: props.task.description || '',
@@ -27,8 +26,11 @@ const form = useForm({
   _method: 'put',
 });
 
-// Preview image
-const currentImage = computed(() => {
+// Track the preview URL with a simple variable
+let previewUrl = '';
+
+// Calculate the initial image URL
+function getImageUrl() {
   if (form.image instanceof File) {
     return URL.createObjectURL(form.image);
   }
@@ -38,14 +40,31 @@ const currentImage = computed(() => {
   }
   
   return null;
-});
+}
 
 // Handle image upload
 function handleImageUpload(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files.length > 0) {
     form.image = input.files[0];
+    // Update preview URL when a new file is selected
+    previewUrl = URL.createObjectURL(form.image);
   }
+}
+
+// Handle image error
+function handleImageError(event: Event) {
+  const imgElement = event.target as HTMLImageElement;
+  
+  // Remove the onerror handler to prevent infinite loops
+  imgElement.onerror = null;
+  
+  // Log the error for debugging
+  console.error('Image preview error:', imgElement.src);
+  
+  // Replace with a simple gray rectangle using a data URI
+  imgElement.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22180%22%20height%3D%22120%22%20viewBox%3D%220%200%20180%20120%22%3E%3Crect%20width%3D%22180%22%20height%3D%22120%22%20fill%3D%22%23eee%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20style%3D%22dominant-baseline%3A%20middle%3B%20text-anchor%3A%20middle%3B%20font-size%3A%2012px%3B%20fill%3A%20%23999%3B%22%3EImage%20unavailable%3C%2Ftext%3E%3C%2Fsvg%3E';
+  imgElement.classList.add('image-error');
 }
 
 // Submit form
@@ -137,8 +156,13 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div v-if="form.errors.image" class="mt-1 text-sm text-red-600">{{ form.errors.image }}</div>
             
             <!-- Image Preview -->
-            <div v-if="currentImage" class="mt-4">
-              <img :src="currentImage" alt="Task image preview" class="h-40 w-auto rounded-lg object-cover" />
+            <div v-if="previewUrl || (props.task.image_path && !form.image)" class="mt-4">
+              <img 
+                :src="previewUrl || (props.task.image_url || `/storage/${props.task.image_path}`)" 
+                alt="Task image preview" 
+                class="h-40 w-auto rounded-lg object-cover" 
+                @error="handleImageError" 
+              />
             </div>
           </div>
 
