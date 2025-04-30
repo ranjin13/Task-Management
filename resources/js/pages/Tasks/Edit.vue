@@ -29,19 +29,6 @@ const form = useForm({
 // Track the preview URL with a simple variable
 let previewUrl = '';
 
-// Calculate the initial image URL
-function getImageUrl() {
-  if (form.image instanceof File) {
-    return URL.createObjectURL(form.image);
-  }
-  
-  if (props.task.image_path) {
-    return props.task.image_url || `/storage/${props.task.image_path}`;
-  }
-  
-  return null;
-}
-
 // Handle image upload
 function handleImageUpload(event: Event) {
   const input = event.target as HTMLInputElement;
